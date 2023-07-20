@@ -1,12 +1,10 @@
-# nodejs-backend-template-by-nitipon
+# bento-backend
 
-A Node.js backend template
-
-[![Node.js CI](https://github.com/nitipon-apaisri/nodejs-backend-template-by-nitipon/actions/workflows/node.js.yml/badge.svg?branch=main&event=push)](https://github.com/nitipon-apaisri/nodejs-backend-template-by-nitipon/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/nitipon-apaisri/bento-backend/actions/workflows/node.js.yml/badge.svg?event=push)](https://github.com/nitipon-apaisri/bento-backend/actions/workflows/node.js.yml)
 
 Features:
-- pnpm as package manager
-- typescript
-- unit testing with jest and supertest
-- backend with express.js
-# bento-backend
+
+-   pnpm as package manager
+-   typescript
+-   unit testing with jest and supertest
+-   backend with express.js
