@@ -7,7 +7,7 @@ const port = process.env.PORT || 1997;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger);
-app.use("/api", router);
+app.use("/api/v1", router);
 app.get("/", (req: Request, res: Response) => {
     res.send("Hello World!");
 });
