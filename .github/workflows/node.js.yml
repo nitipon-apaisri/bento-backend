@@ -16,6 +16,7 @@ jobs:
     env:
       name: prod
       PORT: ${{ vars.PORT }}
+      LOCAL_MONGODB_URI:  ${{ vars.LOCAL_MONGODB_URI }}
     strategy:
       matrix:
         node-version: [16.x, 18.x]

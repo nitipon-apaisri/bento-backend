@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { Express, Request, Response } from "express";
 import logger from "./middlewares/logger";
 import router from "./routes";
+import { connect } from "./database/connect";
 const app: Express = express();
 const port = process.env.PORT || 1997;
 app.use(express.json());
@@ -13,6 +14,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 const run = async () => {
     try {
+        await connect();
         app.listen(port, () => {
             console.log(`Server is running on port ${port}`);
         });
