@@ -27,7 +27,9 @@ describe("Hello World", () => {
 
 describe("Menu", () => {
     test("should return 200", async () => {
-        const res = await request(app).post("/api/v1/menu");
+        const res = await request(app)
+            .post("/api/v1/menu")
+            .set("Authorization", process.env.SAMPLE_TOKEN as string);
         const resText = JSON.parse(res.text);
         expect(res.status).toBe(200);
         expect(resText.message).toEqual("Menu registered successfully");
