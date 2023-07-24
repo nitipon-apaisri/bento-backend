@@ -3,4 +3,4 @@ import { menuType } from "../types/menuTypes";
 
 const { Schema } = mongoose;
 const menuSchema = new Schema<menuType>({ _id: String, name: String, description: String, price: Number });
-export const menuModel = mongoose.model<menuType>("menu", menuSchema);
+export const menuModel = mongoose.model<menuType>("menus", menuSchema);
