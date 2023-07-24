@@ -1,8 +1,13 @@
 import { Router } from "express";
 import { getHelloworldController } from "../controllers/exempleController";
 import { getMenu, registerMenu } from "../controllers/menuController";
+import { registerUser, signIn } from "../controllers/userController";
+import { auth } from "../middlewares/auth";
 const router = Router();
 router.get("/helloworld", getHelloworldController);
 router.get("/menu", getMenu);
-router.post("/menu", registerMenu);
+router.post("/menu", auth, registerMenu);
+router.post("/user", registerUser);
+router.post("/signIn", signIn);
+router.post("/auth", auth);
 export default router;
