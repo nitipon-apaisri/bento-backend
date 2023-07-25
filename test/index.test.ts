@@ -1,18 +1,23 @@
-import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, jest, test } from "@jest/globals";
 import request from "supertest";
 import app from "../app";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+const exempleUser = {
+    name: "Miyamoto Musashi",
+    email: "m.m@mail.com",
+    password: "123456789",
+    role: ["ADMIN"],
+};
+const signIn = {
+    email: "m.m@mail.com",
+    password: "123456789",
+};
 beforeAll(async () => {
-    const exempleMenu = {
-        name: "Yakiniku",
-        description: "-",
-        price: 150,
-    };
     const mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), { dbName: "sample-db" });
     // await mongoose.connect(`${process.env.LOCAL_MONGODB_URI}`); //connect to the database before each test
-    await request(app).post("/api/v1/menu").send(exempleMenu).set("Accept", "application/json").set("Content-Type", "application/json");
+    await request(app).post("/api/v1/user").send(exempleUser).set("Accept", "application/json").set("Content-Type", "application/json");
 });
 afterAll(async () => {
     await mongoose.connection.close(); //stop the connection after all test and stop tests leaking due to improper teardown
@@ -27,9 +32,8 @@ describe("Hello World", () => {
 
 describe("Menu", () => {
     test("should return 200", async () => {
-        const res = await request(app)
-            .post("/api/v1/menu")
-            .set("Authorization", process.env.SAMPLE_TOKEN as string);
+        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
+        const res = await request(app).post("/api/v1/menu").set("Authorization", JSON.parse(resSignIn.text).token);
         const resText = JSON.parse(res.text);
         expect(res.status).toBe(200);
         expect(resText.message).toEqual("Menu registered successfully");
