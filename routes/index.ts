@@ -1,15 +1,21 @@
 import { Router } from "express";
-import { getHelloworldController } from "../controllers/exempleController";
-import { getMenu, registerMenu, updateMenu } from "../controllers/menuController";
+import { deleteMenu, getMenu, registerMenu, updateMenu } from "../controllers/menuController";
 import { registerUser, signIn } from "../controllers/userController";
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/userAccess";
 const router = Router();
-router.get("/helloworld", getHelloworldController);
-router.get("/menu", getMenu);
-router.post("/menu", auth, isAdmin, registerMenu);
-router.post("/user", registerUser);
+
+//Auth
 router.post("/signIn", signIn);
 router.post("/auth", auth, isAdmin);
+
+//Menu
+router.get("/menu", getMenu);
+router.post("/menu", auth, isAdmin, registerMenu);
 router.put("/menu/:id", auth, isAdmin, updateMenu);
+router.delete("/menu/:id", auth, isAdmin, deleteMenu);
+
+//User
+router.post("/user", registerUser);
+
 export default router;

@@ -41,8 +41,23 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
         const findMenu = (await menuModel.findOne({ _id: id })) as menuType;
         if (findMenu) {
             const update = { name: name ? name : findMenu.name, description: description ? description : findMenu.description, price: price ? price : findMenu.price };
-            const menu = await menuModel.findOneAndUpdate({ _id: id }, update);
+            await menuModel.findOneAndUpdate({ _id: id }, update);
             res.status(200).json({ message: "Menu updated successfully" });
+        } else {
+            res.status(401).json({ message: "Menu not found" });
+        }
+    } catch (error) {
+        res.status(500);
+    }
+};
+
+export const deleteMenu = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const findMenu = (await menuModel.findOne({ _id: id })) as menuType;
+        if (findMenu) {
+            await menuModel.deleteOne({ _id: id });
+            res.status(200).json({ message: "Menu deleted successfully" });
         } else {
             res.status(401).json({ message: "Menu not found" });
         }

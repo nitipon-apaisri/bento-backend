@@ -3,6 +3,7 @@ import request from "supertest";
 import app from "../app";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+
 const exempleUser = {
     name: "Miyamoto Musashi",
     email: "m.m@mail.com",
@@ -13,6 +14,12 @@ const signIn = {
     email: "m.m@mail.com",
     password: "123456789",
 };
+const sampleMenu = {
+    name: "Yakiniku",
+    description: "-",
+    price: 150,
+};
+
 beforeAll(async () => {
     const mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), { dbName: "sample-db" });
@@ -22,21 +29,9 @@ beforeAll(async () => {
 afterAll(async () => {
     await mongoose.connection.close(); //stop the connection after all test and stop tests leaking due to improper teardown
 });
-describe("Hello World", () => {
-    test("should return Hello World", async () => {
-        const response = await request(app).get("/");
-        expect(response.status).toBe(200);
-        expect(response.text).toEqual("Hello World!");
-    });
-});
 
 describe("Menu", () => {
     test("should return 200", async () => {
-        const sampleMenu = {
-            name: "Yakiniku",
-            description: "-",
-            price: 150,
-        };
         const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).post("/api/v1/menu").send(sampleMenu).set("Authorization", JSON.parse(resSignIn.text).token);
         const resText = JSON.parse(res.text);
@@ -53,6 +48,13 @@ describe("Menu", () => {
         const menuId = JSON.parse(res.text)[0]._id;
         const resUpdate = await request(app).put(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", JSON.parse(resSignIn.text).token);
         expect(resUpdate.status).toBe(200);
+    });
+    test("should return 200 after deleted", async () => {
+        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
+        const res = await request(app).get("/api/v1/menu");
+        const menuId = JSON.parse(res.text)[0]._id;
+        const resDelete = await request(app).delete(`/api/v1/menu/${menuId}`).set("Authorization", JSON.parse(resSignIn.text).token);
+        expect(resDelete.status).toBe(200);
     });
 });
 
