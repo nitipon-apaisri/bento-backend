@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getHelloworldController } from "../controllers/exempleController";
-import { getMenu, registerMenu } from "../controllers/menuController";
+import { getMenu, registerMenu, updateMenu } from "../controllers/menuController";
 import { registerUser, signIn } from "../controllers/userController";
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/userAccess";
@@ -11,4 +11,5 @@ router.post("/menu", auth, isAdmin, registerMenu);
 router.post("/user", registerUser);
 router.post("/signIn", signIn);
 router.post("/auth", auth, isAdmin);
+router.put("/menu/:id", auth, isAdmin, updateMenu);
 export default router;

@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { userModel } from "../models/userModel";
 import { v4 as uuidv4 } from "uuid";
 import { userType } from "../types/userTypes";
+
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const { name, email, password, role } = req.body;

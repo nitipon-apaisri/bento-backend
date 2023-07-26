@@ -32,8 +32,13 @@ describe("Hello World", () => {
 
 describe("Menu", () => {
     test("should return 200", async () => {
+        const sampleMenu = {
+            name: "Yakiniku",
+            description: "-",
+            price: 150,
+        };
         const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
-        const res = await request(app).post("/api/v1/menu").set("Authorization", JSON.parse(resSignIn.text).token);
+        const res = await request(app).post("/api/v1/menu").send(sampleMenu).set("Authorization", JSON.parse(resSignIn.text).token);
         const resText = JSON.parse(res.text);
         expect(res.status).toBe(200);
         expect(resText.message).toEqual("Menu registered successfully");
@@ -41,6 +46,13 @@ describe("Menu", () => {
     test("should return menu", async () => {
         const res = await request(app).get("/api/v1/menu");
         expect(res.status).toBe(200);
+    });
+    test("should return 200 after updated", async () => {
+        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
+        const res = await request(app).get("/api/v1/menu");
+        const menuId = JSON.parse(res.text)[0]._id;
+        const resUpdate = await request(app).put(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", JSON.parse(resSignIn.text).token);
+        expect(resUpdate.status).toBe(200);
     });
 });
 
