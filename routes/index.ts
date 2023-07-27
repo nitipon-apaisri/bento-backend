@@ -7,7 +7,6 @@ const router = Router();
 
 //Auth
 router.post("/signIn", signIn);
-router.post("/auth", auth, isAdmin);
 
 //Menu
 router.get("/menu", getMenu);
