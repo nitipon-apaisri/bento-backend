@@ -16,6 +16,8 @@ export const registerUser = async (req: Request, res: Response) => {
             email,
             password: hashedPassword,
             role: role ? role : ["CUSTOMER"],
+            createdAt: new Date(),
+            updatedAt: new Date(),
         };
         if (name === "" || email === "" || password === "" || name === undefined || email === undefined || password === undefined) {
             res.status(401).json({ message: "Please fill all the fields" });

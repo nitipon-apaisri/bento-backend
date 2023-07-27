@@ -4,4 +4,6 @@ export interface userType {
     email: string;
     password: string;
     role: [string];
+    createdAt: Date;
+    updatedAt: Date;
 }

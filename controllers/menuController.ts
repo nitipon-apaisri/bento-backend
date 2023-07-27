@@ -11,14 +11,16 @@ export const registerMenu = async (req: Request, res: Response, next: NextFuncti
             name,
             description,
             price,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         };
         const findDuplicate = await menuModel.findOne({ name: menu.name });
         if (findDuplicate) {
-            res.status(409).json({ message: "Menu already exists" });
+            res.status(409).json({ message: "Menu already exists", menu: menu });
         } else {
             const newMenu = new menuModel(menu);
             await newMenu.save();
-            res.status(200).json({ message: "Menu registered successfully" });
+            res.status(200).json({ message: "Menu registered successfully", menu: menu });
         }
     } catch (error) {
         res.status(500);
@@ -40,7 +42,7 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
         const { id } = req.params;
         const findMenu = (await menuModel.findOne({ _id: id })) as menuType;
         if (findMenu) {
-            const update = { name: name ? name : findMenu.name, description: description ? description : findMenu.description, price: price ? price : findMenu.price };
+            const update = { name: name ? name : findMenu.name, description: description ? description : findMenu.description, price: price ? price : findMenu.price, updatedAt: Date.now() };
             await menuModel.findOneAndUpdate({ _id: id }, update);
             res.status(200).json({ message: "Menu updated successfully" });
         } else {
