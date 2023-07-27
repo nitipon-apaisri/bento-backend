@@ -37,16 +37,20 @@ export const registerUser = async (req: Request, res: Response) => {
 export const signIn = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
-        const user = await userModel.findOne({ email: email });
-        const validPassword = await bcrypt.compare(password, user!.password);
-        if (!validPassword) {
-            res.status(401).json({ message: "Invalid password" });
-        }
-        res.status(200).json({ message: "User signed in successfully", token: jwt.sign({ _id: user?._id, email: user?.email }, process.env.JWT_SECRET as string) });
-        if (password === user!.password) {
-            if (user) {
-            } else {
-                res.status(401).json({ message: "User not found" });
+        if (password === "" || email === "" || password === undefined || email === undefined) {
+            res.status(401).json({ message: "Please fill all the fields" });
+        } else {
+            const user = await userModel.findOne({ email: email });
+            const validPassword = await bcrypt.compare(password, user!.password);
+            if (!validPassword) {
+                res.status(401).json({ message: "Invalid password" });
+            }
+            res.status(200).json({ message: "User signed in successfully", token: jwt.sign({ _id: user?._id, email: user?.email }, process.env.JWT_SECRET as string) });
+            if (password === user!.password) {
+                if (user) {
+                } else {
+                    res.status(401).json({ message: "User not found" });
+                }
             }
         }
     } catch (error) {
