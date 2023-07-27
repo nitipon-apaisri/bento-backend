@@ -15,15 +15,19 @@ export const registerUser = async (req: Request, res: Response) => {
             name,
             email,
             password: hashedPassword,
-            role,
+            role: role ? role : ["CUSTOMER"],
         };
-        const findDuplicate = await userModel.findOne({ email: user.email });
-        if (findDuplicate) {
-            res.status(409).json({ message: "User already exists" });
+        if (name === "" || email === "" || password === "" || name === undefined || email === undefined || password === undefined) {
+            res.status(401).json({ message: "Please fill all the fields" });
         } else {
-            const newUser = new userModel(user);
-            await newUser.save();
-            res.status(200).json({ message: "User registered successfully" });
+            const findDuplicate = await userModel.findOne({ email: user.email });
+            if (findDuplicate) {
+                res.status(409).json({ message: "User already exists" });
+            } else {
+                const newUser = new userModel(user);
+                await newUser.save();
+                res.status(200).json({ message: "User registered successfully" });
+            }
         }
     } catch (error) {
         res.status(500);
