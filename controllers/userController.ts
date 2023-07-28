@@ -5,6 +5,15 @@ import { v4 as uuidv4 } from "uuid";
 import { userType } from "../types/userTypes";
 import bcrypt from "bcrypt";
 
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await userModel.find().exec();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500);
+    }
+};
+
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const salt = await bcrypt.genSalt(10);
@@ -33,6 +42,26 @@ export const registerUser = async (req: Request, res: Response) => {
         }
     } catch (error) {
         res.status(500);
+    }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+    const { name, email, role } = req.body;
+    const { id } = req.params;
+    const findUser = (await userModel.findOne({ _id: id })) as userType;
+
+    if (findUser) {
+        const update = {
+            name: name ? name : findUser.name,
+            email: email ? email : findUser.email,
+            password: findUser.password,
+            role: role ? role : findUser.role,
+            updatedAt: Date.now(),
+        };
+        await userModel.findOneAndUpdate({ _id: id }, update);
+        res.status(200).json({ message: "User updated successfully" });
+    } else {
+        res.status(401).json({ message: "User not found" });
     }
 };
 
