@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { deleteMenu, getMenu, registerMenu, updateMenu } from "../controllers/menuController";
-import { getUsers, registerUser, signIn, updateUser } from "../controllers/userController";
+import { getUsers, registerUser, signIn, updatePassword, updateUser } from "../controllers/userController";
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/userAccess";
 const router = Router();
@@ -18,4 +18,5 @@ router.delete("/menu/:id", auth, isAdmin, deleteMenu);
 router.get("/users", auth, isAdmin, getUsers);
 router.post("/user", registerUser);
 router.put("/user/:id", auth, isAdmin, updateUser);
+router.patch("/user/:id/changePassword", updatePassword);
 export default router;

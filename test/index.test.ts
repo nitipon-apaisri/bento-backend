@@ -71,7 +71,15 @@ describe("User", () => {
         const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
         expect(res.status).toBe(200);
     });
+    test("should return 200 after changed password", async () => {
+        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
+        const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
+        const userId = JSON.parse(res.text)[0]._id;
+        const resUpdate = await request(app).patch(`/api/v1/user/${userId}/changePassword`).send({ password: "123" }).set("Authorization", JSON.parse(resSignIn.text).token);
+        expect(resUpdate.status).toBe(200);
+    });
     test("should return 200 after updated", async () => {
+        signIn.password = "123";
         const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
         const userId = JSON.parse(res.text)[0]._id;

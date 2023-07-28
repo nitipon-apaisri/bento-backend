@@ -65,6 +65,18 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 };
 
+export const updatePassword = async (req: Request, res: Response) => {
+    const { password } = req.body;
+    const { id } = req.params;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    await userModel.findById({ _id: id }).then((user) => {
+        user!.password = hashedPassword;
+        user!.save();
+    });
+    res.status(200).json({ message: "Password updated successfully" });
+};
+
 export const signIn = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
