@@ -83,7 +83,15 @@ describe("User", () => {
         const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
         const userId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "ALEX" }).set("Authorization", JSON.parse(resSignIn.text).token);
+        const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", JSON.parse(resSignIn.text).token);
         expect(resUpdate.status).toBe(200);
+    });
+});
+
+describe("Reset password", () => {
+    test("should return reset password link", async () => {
+        const res = await request(app).post("/api/v1/get-reset-password-link").send({ email: "m.ms@mail.com" }).set("Accept", "application/json").set("Content-Type", "application/json");
+        expect(res.status).toBe(200);
+        expect(JSON.parse(res.text)).toHaveProperty("link");
     });
 });

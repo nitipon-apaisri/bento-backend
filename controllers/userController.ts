@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { userModel } from "../models/userModel";
 import { v4 as uuidv4 } from "uuid";
 import { userType } from "../types/userTypes";
@@ -75,6 +75,17 @@ export const updatePassword = async (req: Request, res: Response) => {
         user!.save();
     });
     res.status(200).json({ message: "Password updated successfully" });
+};
+
+export const createResetPasswordToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { email } = req.body;
+        const userId = await userModel.findOne({ email: email });
+        const token = jwt.sign({ id: userId?._id }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
+        res.status(200).json({ link: `http://localhost:${process.env.PORT || 1997}/api/v1/user/${userId?._id}/reset-password/${token}` }); //Also send the link to the user's email
+    } catch (error) {
+        res.status(500);
+    }
 };
 
 export const signIn = async (req: Request, res: Response) => {
