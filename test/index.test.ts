@@ -20,12 +20,15 @@ const sampleMenu = {
     ingredients: ["beef", "salt", "pepper"],
     price: 150,
 };
+let token: string;
 
 beforeAll(async () => {
     const mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri(), { dbName: "sample-db" });
     // await mongoose.connect(`${process.env.LOCAL_MONGODB_URI}`); //connect to the database before each test
     await request(app).post("/api/v1/user").send(exempleUser).set("Accept", "application/json").set("Content-Type", "application/json");
+    const res = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
+    token = JSON.parse(res.text).token;
 });
 afterAll(async () => {
     await mongoose.connection.close(); //stop the connection after all test and stop tests leaking due to improper teardown
@@ -33,8 +36,7 @@ afterAll(async () => {
 
 describe("Menu", () => {
     test("should return 200 after registered menu", async () => {
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
-        const res = await request(app).post("/api/v1/menu").send(sampleMenu).set("Authorization", JSON.parse(resSignIn.text).token);
+        const res = await request(app).post("/api/v1/menu").send(sampleMenu).set("Authorization", token);
         const resText = JSON.parse(res.text);
         expect(res.status).toBe(200);
         expect(resText.message).toEqual("Menu registered successfully");
@@ -44,17 +46,15 @@ describe("Menu", () => {
         expect(res.status).toBe(200);
     });
     test("should return 200 after updated", async () => {
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).get("/api/v1/menu");
         const menuId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).put(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", JSON.parse(resSignIn.text).token);
+        const resUpdate = await request(app).put(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
     test("should return 200 after deleted", async () => {
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).get("/api/v1/menu");
         const menuId = JSON.parse(res.text)[0]._id;
-        const resDelete = await request(app).delete(`/api/v1/menu/${menuId}`).set("Authorization", JSON.parse(resSignIn.text).token);
+        const resDelete = await request(app).delete(`/api/v1/menu/${menuId}`).set("Authorization", token);
         expect(resDelete.status).toBe(200);
     });
 });
@@ -68,23 +68,20 @@ describe("Order", () => {
 
 describe("User", () => {
     test("should return users", async () => {
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
-        const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
+        const res = await request(app).get("/api/v1/users").set("Authorization", token);
         expect(res.status).toBe(200);
     });
     test("should return 200 after changed password", async () => {
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
-        const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
+        const res = await request(app).get("/api/v1/users").set("Authorization", token);
         const userId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).patch(`/api/v1/user/${userId}/changePassword`).send({ password: "123" }).set("Authorization", JSON.parse(resSignIn.text).token);
+        const resUpdate = await request(app).patch(`/api/v1/user/${userId}/changePassword`).send({ password: "123" }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
     test("should return 200 after updated", async () => {
         signIn.password = "123";
-        const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
-        const res = await request(app).get("/api/v1/users").set("Authorization", JSON.parse(resSignIn.text).token);
+        const res = await request(app).get("/api/v1/users").set("Authorization", token);
         const userId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", JSON.parse(resSignIn.text).token);
+        const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
 });
