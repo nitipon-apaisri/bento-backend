@@ -3,6 +3,7 @@ export interface menuType {
     name: string;
     description: string;
     price: number;
+    ingredients: [string];
     createdAt: Date;
     updatedAt: Date;
 }

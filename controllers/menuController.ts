@@ -5,22 +5,27 @@ import { menuType } from "../types/menuTypes";
 
 export const registerMenu = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, description, price } = req.body;
+        const { name, description, ingredients, price } = req.body;
         const menu: menuType = {
             _id: uuidv4(),
-            name,
+            name: name.toLowerCase(),
             description,
             price,
+            ingredients,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        const findDuplicate = await menuModel.findOne({ name: menu.name });
-        if (findDuplicate) {
-            res.status(409).json({ message: "Menu already exists", menu: menu });
+        if (name === "" || description === "" || price === undefined || name === undefined || description === undefined || ingredients.lenght === 0) {
+            res.status(401).json({ message: "Please fill all the fields" });
         } else {
-            const newMenu = new menuModel(menu);
-            await newMenu.save();
-            res.status(200).json({ message: "Menu registered successfully", menu: menu });
+            const findDuplicate = await menuModel.findOne({ name: menu.name.toLowerCase() });
+            if (findDuplicate) {
+                res.status(409).json({ message: "Menu already exists", menu: menu });
+            } else {
+                const newMenu = new menuModel(menu);
+                await newMenu.save();
+                res.status(200).json({ message: "Menu registered successfully", menu: menu });
+            }
         }
     } catch (error) {
         res.status(500);

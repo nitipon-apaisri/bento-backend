@@ -17,6 +17,7 @@ const signIn = {
 const sampleMenu = {
     name: "Yakiniku",
     description: "-",
+    ingredients: ["beef", "salt", "pepper"],
     price: 150,
 };
 
@@ -31,14 +32,14 @@ afterAll(async () => {
 });
 
 describe("Menu", () => {
-    test("should return 200", async () => {
+    test("should return 200 after registered menu", async () => {
         const resSignIn = await request(app).post("/api/v1/signIn").send(signIn).set("Accept", "application/json").set("Content-Type", "application/json");
         const res = await request(app).post("/api/v1/menu").send(sampleMenu).set("Authorization", JSON.parse(resSignIn.text).token);
         const resText = JSON.parse(res.text);
         expect(res.status).toBe(200);
         expect(resText.message).toEqual("Menu registered successfully");
     });
-    test("should return menu", async () => {
+    test("should return all menus", async () => {
         const res = await request(app).get("/api/v1/menu");
         expect(res.status).toBe(200);
     });
