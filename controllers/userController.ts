@@ -4,13 +4,14 @@ import { userModel } from "../models/userModel";
 import { v4 as uuidv4 } from "uuid";
 import { userType } from "../types/userTypes";
 import bcrypt from "bcrypt";
+import { missingFields, userAlreadyExists, userNotFound, userRegistered, userUpdated } from "../modules/responseMessages";
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await userModel.find().exec();
         res.status(200).json(users);
     } catch (error) {
-        res.status(500);
+        throw new Error(error as string);
     }
 };
 
@@ -29,19 +30,19 @@ export const registerUser = async (req: Request, res: Response) => {
             updatedAt: new Date(),
         };
         if (name === "" || email === "" || password === "" || name === undefined || email === undefined || password === undefined) {
-            res.status(401).json({ message: "Please fill all the fields" });
+            res.status(missingFields.status).json({ message: missingFields.message });
         } else {
             const findDuplicate = await userModel.findOne({ email: user.email });
             if (findDuplicate) {
-                res.status(409).json({ message: "User already exists" });
+                res.status(userAlreadyExists.status).json({ message: userAlreadyExists.message });
             } else {
                 const newUser = new userModel(user);
                 await newUser.save();
-                res.status(200).json({ message: "User registered successfully" });
+                res.status(userRegistered.status).json({ message: userRegistered.message, user: user });
             }
         }
     } catch (error) {
-        res.status(500);
+        throw new Error(error as string);
     }
 };
 
@@ -59,9 +60,9 @@ export const updateUser = async (req: Request, res: Response) => {
             updatedAt: Date.now(),
         };
         await userModel.findOneAndUpdate({ _id: id }, update);
-        res.status(200).json({ message: "User updated successfully" });
+        res.status(userUpdated.status).json({ message: userUpdated.message });
     } else {
-        res.status(401).json({ message: "User not found" });
+        res.status(userNotFound.status).json({ message: userNotFound.message });
     }
 };
 
@@ -84,7 +85,7 @@ export const createResetPasswordToken = async (req: Request, res: Response, next
         const token = jwt.sign({ id: userId?._id }, process.env.JWT_SECRET as string, { expiresIn: "15m" });
         res.status(200).json({ link: `http://localhost:${process.env.PORT || 1997}/api/v1/user/${userId?._id}/reset-password/${token}` }); //Also send the link to the user's email
     } catch (error) {
-        res.status(500);
+        throw new Error(error as string);
     }
 };
 
@@ -92,7 +93,7 @@ export const signIn = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
         if (password === "" || email === "" || password === undefined || email === undefined) {
-            res.status(401).json({ message: "Please fill all the fields" });
+            res.status(missingFields.status).json({ message: missingFields.message });
         } else {
             const user = await userModel.findOne({ email: email });
             const validPassword = await bcrypt.compare(password, user!.password);
@@ -103,11 +104,11 @@ export const signIn = async (req: Request, res: Response) => {
             if (password === user!.password) {
                 if (user) {
                 } else {
-                    res.status(401).json({ message: "User not found" });
+                    res.status(userNotFound.status).json({ message: userNotFound.message });
                 }
             }
         }
     } catch (error) {
-        res.status(500);
+        throw new Error(error as string);
     }
 };
