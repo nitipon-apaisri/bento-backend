@@ -3,7 +3,8 @@ export interface menuType {
     name: string;
     description: string;
     price: number;
-    ingredients: [string];
+    ingredients: string[];
+    tags: string[];
     createdAt: Date;
     updatedAt: Date;
 }

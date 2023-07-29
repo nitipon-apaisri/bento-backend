@@ -1,24 +1,33 @@
-import { afterAll, beforeAll, describe, expect, jest, test } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, test } from "@jest/globals";
 import request from "supertest";
 import app from "../app";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import { menuType } from "../types/menuTypes";
+import { userType } from "../types/userTypes";
 
-const exempleUser = {
+const exempleUser: userType = {
+    _id: "1",
     name: "Miyamoto Musashi",
     email: "m.m@mail.com",
     password: "123456789",
     role: ["ADMIN"],
+    createdAt: new Date(),
+    updatedAt: new Date(),
 };
 const signIn = {
     email: "m.m@mail.com",
     password: "123456789",
 };
-const sampleMenu = {
+const sampleMenu: menuType = {
+    _id: "1",
     name: "Yakiniku",
     description: "-",
     ingredients: ["beef", "salt", "pepper"],
+    tags: ["wok"],
     price: 150,
+    createdAt: new Date(),
+    updatedAt: new Date(),
 };
 let token: string;
 
