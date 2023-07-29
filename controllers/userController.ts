@@ -4,7 +4,7 @@ import { userModel } from "../models/userModel";
 import { v4 as uuidv4 } from "uuid";
 import { userType } from "../types/userTypes";
 import bcrypt from "bcrypt";
-import { missingFields, userAlreadyExists, userNotFound, userRegistered, userUpdated } from "../modules/responseMessages";
+import { missingFields, userAlreadyExists, userDeleted, userNotFound, userRegistered, userUpdated } from "../modules/responseMessages";
 
 export const getUsers = async (req: Request, res: Response) => {
     try {
@@ -67,15 +67,19 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 export const updatePassword = async (req: Request, res: Response) => {
-    const { password } = req.body;
-    const { id } = req.params;
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    await userModel.findById({ _id: id }).then((user) => {
-        user!.password = hashedPassword;
-        user!.save();
-    });
-    res.status(200).json({ message: "Password updated successfully" });
+    try {
+        const { password } = req.body;
+        const { id } = req.params;
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        await userModel.findById({ _id: id }).then((user) => {
+            user!.password = hashedPassword;
+            user!.save();
+        });
+        res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+        throw new Error(error as string);
+    }
 };
 
 export const createResetPasswordToken = async (req: Request, res: Response, next: NextFunction) => {
@@ -107,6 +111,21 @@ export const signIn = async (req: Request, res: Response) => {
                     res.status(userNotFound.status).json({ message: userNotFound.message });
                 }
             }
+        }
+    } catch (error) {
+        throw new Error(error as string);
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const findUser = await userModel.findOne({ _id: id });
+        if (findUser) {
+            await userModel.deleteOne({ _id: id });
+            res.status(userDeleted.status).json({ message: userDeleted.message });
+        } else {
+            res.status(userNotFound.status).json({ message: userNotFound.message });
         }
     } catch (error) {
         throw new Error(error as string);

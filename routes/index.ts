@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { deleteMenu, getMenu, registerMenu, updateMenu } from "../controllers/menuController";
-import { createResetPasswordToken, getUsers, registerUser, signIn, updatePassword, updateUser } from "../controllers/userController";
+import { createResetPasswordToken, deleteUser, getUsers, registerUser, signIn, updatePassword, updateUser } from "../controllers/userController";
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/userAccess";
 import { tokenValidation } from "../middlewares/tokenValidator";
@@ -20,6 +20,7 @@ router.get("/users", auth, isAdmin, getUsers);
 router.post("/user", registerUser);
 router.put("/user/:id", auth, isAdmin, updateUser);
 router.patch("/user/:id/changePassword", updatePassword);
+router.delete("/user/:id", auth, isAdmin, deleteUser);
 
 //Reset Password
 router.post("/get-reset-password-link", createResetPasswordToken);

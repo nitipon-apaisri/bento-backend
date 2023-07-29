@@ -84,6 +84,12 @@ describe("User", () => {
         const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
+    test("should return 200 after deleted", async () => {
+        const res = await request(app).get("/api/v1/users").set("Authorization", token);
+        const userId = JSON.parse(res.text)[0]._id;
+        const resDelete = await request(app).delete(`/api/v1/user/${userId}`).set("Authorization", token);
+        expect(resDelete.status).toBe(200);
+    });
 });
 
 describe("Reset password", () => {
