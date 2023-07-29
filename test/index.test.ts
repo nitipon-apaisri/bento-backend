@@ -21,6 +21,7 @@ const signIn = {
 };
 const sampleMenu: menuType = {
     _id: "1",
+    menuNumber: 1,
     name: "Yakiniku",
     description: "-",
     ingredients: ["beef", "salt", "pepper"],

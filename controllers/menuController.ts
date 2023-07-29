@@ -6,10 +6,11 @@ import { menuAlreadyExists, menuDeleted, menuNotFound, menuRegistered, menuUpdat
 
 export const registerMenu = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, description, ingredients, tags, price } = req.body;
+        const { name, menuNumber, description, ingredients, tags, price } = req.body;
         const menu: menuType = {
             _id: uuidv4(),
             name: name.toLowerCase(),
+            menuNumber,
             description,
             price,
             ingredients,
@@ -17,7 +18,7 @@ export const registerMenu = async (req: Request, res: Response, next: NextFuncti
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        if (name === "" || description === "" || price === undefined || name === undefined || description === undefined || ingredients.lenght === 0 || tags.lenght === 0) {
+        if (name === "" || description === "" || price === undefined || name === undefined || description === undefined || ingredients.lenght === 0 || tags.lenght === 0 || menuNumber === undefined) {
             res.status(missingFields.status).json({ message: missingFields.message });
         } else {
             const findDuplicate = await menuModel.findOne({ name: menu.name.toLowerCase() });
