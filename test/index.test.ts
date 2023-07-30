@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { menuType } from "../types/menuTypes";
 import { userType } from "../types/userTypes";
+import { ingredientType } from "../types/ingredientTypes";
 
 const exempleUser: userType = {
     _id: "1",
@@ -30,6 +31,25 @@ const sampleMenu: menuType = {
     createdAt: new Date(),
     updatedAt: new Date(),
 };
+
+const sampleIngredients = [
+    {
+        name: "beef",
+        description: "beef",
+        type: "meat",
+    },
+    {
+        name: "salt",
+        description: "salt",
+        type: "spice",
+    },
+    {
+        name: "pepper",
+        description: "pepper",
+        type: "spice",
+    },
+];
+
 let token: string;
 
 beforeAll(async () => {
@@ -107,5 +127,18 @@ describe("Reset password", () => {
         const res = await request(app).post("/api/v1/get-reset-password-link").send({ email: "m.ms@mail.com" }).set("Accept", "application/json").set("Content-Type", "application/json");
         expect(res.status).toBe(200);
         expect(JSON.parse(res.text)).toHaveProperty("link");
+    });
+});
+
+describe("Ingredient", () => {
+    test("should return 200 after registered ingredient", async () => {
+        for (let i of sampleIngredients) {
+            const res = await request(app).post("/api/v1/ingredient").send(i).set("Authorization", token);
+            expect(res.status).toBe(200);
+        }
+    });
+    test("should return all ingredients", async () => {
+        const res = await request(app).get("/api/v1/ingredients").set("Authorization", token);
+        expect(res.status).toBe(200);
     });
 });

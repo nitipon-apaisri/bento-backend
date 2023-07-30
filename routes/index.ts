@@ -4,6 +4,7 @@ import { createResetPasswordToken, deleteUser, getUsers, registerUser, signIn, u
 import { auth } from "../middlewares/auth";
 import { isAdmin } from "../middlewares/userAccess";
 import { tokenValidation } from "../middlewares/tokenValidator";
+import { getIngredients, registerIngredient } from "../controllers/ingredientController";
 const router = Router();
 
 //Auth
@@ -21,6 +22,10 @@ router.post("/user", registerUser);
 router.patch("/user/:id", auth, isAdmin, updateUser);
 router.patch("/user/:id/changePassword", updatePassword);
 router.delete("/user/:id", auth, isAdmin, deleteUser);
+
+//Ingredient
+router.get("/ingredients", auth, isAdmin, getIngredients);
+router.post("/ingredient", auth, isAdmin, registerIngredient);
 
 //Reset Password
 router.post("/get-reset-password-link", createResetPasswordToken);
