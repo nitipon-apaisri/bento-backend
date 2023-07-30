@@ -46,13 +46,20 @@ export const getMenu = async (req: Request, res: Response, next: NextFunction) =
 
 export const updateMenu = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, description, price } = req.body;
+        const { menuNumber, name, description, price, ingredients, tags } = req.body;
         const { id } = req.params;
         const findMenu = (await menuModel.findOne({ _id: id })) as menuType;
         if (findMenu) {
-            const update = { name: name ? name : findMenu.name, description: description ? description : findMenu.description, price: price ? price : findMenu.price, updatedAt: Date.now() };
+            const update = {
+                name: name && name.toLowerCase(),
+                menuNumber,
+                description,
+                price,
+                ingredients,
+                tags,
+            };
             await menuModel.findOneAndUpdate({ _id: id }, update);
-            res.status(menuUpdated.status).json({ message: menuUpdated.message, menu: update });
+            res.status(menuUpdated.status).json({ message: menuUpdated.message });
         } else {
             res.status(menuNotFound.status).json({ message: menuNotFound.message });
         }

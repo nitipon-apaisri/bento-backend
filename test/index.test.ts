@@ -58,7 +58,7 @@ describe("Menu", () => {
     test("should return 200 after updated", async () => {
         const res = await request(app).get("/api/v1/menu");
         const menuId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).put(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", token);
+        const resUpdate = await request(app).patch(`/api/v1/menu/${menuId}`).send({ price: 200 }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
     test("should return 200 after deleted", async () => {
@@ -91,7 +91,7 @@ describe("User", () => {
         signIn.password = "123";
         const res = await request(app).get("/api/v1/users").set("Authorization", token);
         const userId = JSON.parse(res.text)[0]._id;
-        const resUpdate = await request(app).put(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", token);
+        const resUpdate = await request(app).patch(`/api/v1/user/${userId}`).send({ email: "m.ms@mail.com" }).set("Authorization", token);
         expect(resUpdate.status).toBe(200);
     });
     test("should return 200 after deleted", async () => {
