@@ -8,7 +8,7 @@ const menu = {
     name: String,
     description: String,
     price: Number,
-    ingredients: [String],
+    ingredients: [Number],
     tags: [String],
 };
 const menuSchema = new Schema<menuType>(menu, { timestamps: true });
