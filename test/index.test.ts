@@ -25,7 +25,7 @@ const sampleMenu: menuType = {
     menuNumber: 1,
     name: "Yakiniku",
     description: "-",
-    ingredients: ["beef", "salt", "pepper"],
+    ingredients: [1, 2, 3],
     tags: ["wok"],
     price: 150,
     createdAt: new Date(),
